@@ -4,5 +4,8 @@
     <color name="colorPrimaryDark">#1565C0</color>
     <color name="colorAccent">#2196F3</color>
     <color name="scanner_line">#00ceff</color>
+
     <color name="white">#FFFFFF</color>
+    <color name="smart_login_overlay_color">#44000000</color>
+    <color name="smart_login_background">#000000</color>
 </resources>

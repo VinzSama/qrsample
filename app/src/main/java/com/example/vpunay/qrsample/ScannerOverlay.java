@@ -13,25 +13,36 @@ import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 
 public class ScannerOverlay extends ViewGroup {
-    private float left, top;
+    private static float left;
+    private static float top;
+    private static float right;
+    private static float bottom;
     private int rectWidth, rectHeight;
+    private Paint eraser, borderPaint;
+    private PorterDuffXfermode porterDuffXfermode;
+    private RectF rectF;
 
-    public ScannerOverlay(Context context) {
+
+    public ScannerOverlay(final Context context) {
         super(context);
     }
 
-    public ScannerOverlay(Context context, AttributeSet attrs) {
+    public ScannerOverlay(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ScannerOverlay(Context context, AttributeSet attrs, int defStyle) {
+    public ScannerOverlay(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.ScannerOverlay,
                 0, 0);
-        rectWidth = a.getInteger(R.styleable.ScannerOverlay_square_width, getResources().getInteger(R.integer.scanner_rect_width));
-        rectHeight = a.getInteger(R.styleable.ScannerOverlay_square_height, getResources().getInteger(R.integer.scanner_rect_height));
+        //Initialize overlay UI essentials
+        rectWidth = a.getInteger(R.styleable.ScannerOverlay_square_width, 0);
+        rectHeight = a.getInteger(R.styleable.ScannerOverlay_square_height, 0);
+        eraser = new Paint();
+        porterDuffXfermode = new PorterDuffXfermode((PorterDuff.Mode.CLEAR));
+        borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     }
 
     @Override
@@ -41,16 +52,27 @@ public class ScannerOverlay extends ViewGroup {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        left = (w - dpToPx(rectWidth)) / 2;
-        top = (h - dpToPx(rectHeight)) / 2;
+        final int rectWidthPx = dpToPx(rectWidth);
+        final int rectHeightPx = dpToPx(rectHeight);
+        //Calculate scanner sides
+        left = (float)((w - rectWidthPx) / 2);
+        top = (float)((h - rectHeightPx ) / 3);
+        bottom = top + rectHeightPx ;
+        right = left + rectWidthPx;
+        //Create rect
+        rectF = new RectF(left, top, right, bottom);
         super.onSizeChanged(w, h, oldw, oldh);
+    }
+
+    public static boolean isQrCodeInsideOverlay(final RectF rect){
+       return rect.left >= left && rect.right <= right && rect.top >= top && rect.bottom <= bottom;
     }
 
     @Override
     public void onLayout(boolean changed, int left, int top, int right, int bottom) {
     }
 
-    public int dpToPx(int dp) {
+    public int dpToPx(final int dp) {
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
@@ -68,14 +90,35 @@ public class ScannerOverlay extends ViewGroup {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         // draw transparent rect
-        int cornerRadius = 0;
-        Paint eraser = new Paint();
         eraser.setAntiAlias(true);
-        eraser.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        eraser.setXfermode(porterDuffXfermode);
+        canvas.drawRoundRect(rectF, 0, 0, eraser);
 
-        RectF rect = new RectF(left, top, dpToPx(rectWidth) + left, dpToPx(rectHeight) + top);
-        canvas.drawRoundRect(rect, (float) cornerRadius, (float) cornerRadius, eraser);
+        //border color
+        borderPaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
+        //border thickness
+        final int thickness = 20;
+        //border distance
+        final int distance = 90;
 
+        //Draw borders:
+
+        //top left corner
+        canvas.drawRect(left - thickness, top - thickness, distance + left, top, borderPaint);
+        canvas.drawRect(left - thickness, top, left, distance + top, borderPaint);
+
+        //top right corner
+        canvas.drawRect(right - distance, top - thickness, right + thickness, top, borderPaint);
+        canvas.drawRect(right, top, right + thickness, distance + top, borderPaint);
+
+        //bottom left corner
+        canvas.drawRect(left - thickness, bottom, distance + left, bottom + thickness, borderPaint);
+        canvas.drawRect(left - thickness, bottom - distance, left, bottom, borderPaint);
+
+        //bottom right corner
+        canvas.drawRect(right - distance, bottom, right + thickness, bottom + thickness, borderPaint);
+        canvas.drawRect(right, bottom - distance, right + thickness, bottom, borderPaint);
     }
 }

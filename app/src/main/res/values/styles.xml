@@ -9,7 +9,7 @@
     </style>
 
     <style name="progressBarWhite" parent="@style/Theme.AppCompat">
-        <item name="colorAccent">#808080</item>
+        <item name="android:thickness">1dp</item>
     </style>
 
     <style name="CustomDialogTheme" parent="android:Theme.Dialog">

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="scanner_rect_width">400</integer>
-    <integer name="scanner_rect_height">400</integer>
     <integer name="line_width">4</integer>
     <integer name="line_speed">5</integer>
+    <integer name="smart_login_preview_height">1200</integer>
+    <integer name="smart_login_preview_width">1080</integer>
+    <integer name="smart_login_rotate_bitmap">90</integer>
+    <integer name="smart_login_rotate_bitmap_kitkat">360</integer>
 </resources>

@@ -3,24 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentLayout"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@color/smart_login_background"
     tools:context=".QrScanner">
-
     <com.example.vpunay.qrsample.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/innerlayout">
-
+        >
         <com.example.vpunay.qrsample.GraphicOverlay
             android:id="@+id/overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/innerlayout" />
+            />
+
     </com.example.vpunay.qrsample.CameraSourcePreview>
 
     <android.support.constraint.ConstraintLayout

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="smart_login_text_size">20sp</dimen>
+    <dimen name="center_image_size_width_height">90dp</dimen>
+    <dimen name="progress_bar_size_with_height">150dp</dimen>
+    <dimen name="smart_login_indicator_label_height">25dp</dimen>
+    <dimen name="smart_login_indicator_label_margin_bot">10dp</dimen>
+    <dimen name="smart_login_button_margin_bot">70dp</dimen>
+    <dimen name="smart_login_button_height">55dp</dimen>
+    <dimen name="smart_login_button_width">200dp</dimen>
+    <dimen name="smart_login_bottom_line_width">150dp</dimen>
+    <dimen name="smart_login_bottom_height">7dp</dimen>
+    <dimen name="smart_login_bottom_margin_bot">10dp</dimen>
+
+</resources>
