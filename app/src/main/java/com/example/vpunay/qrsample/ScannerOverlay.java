@@ -38,8 +38,11 @@ public class ScannerOverlay extends ViewGroup {
                 R.styleable.ScannerOverlay,
                 0, 0);
         //Initialize overlay UI essentials
-        rectWidth = a.getInteger(R.styleable.ScannerOverlay_square_width, 0);
-        rectHeight = a.getInteger(R.styleable.ScannerOverlay_square_height, 0);
+        rectWidth = a.getInteger(R.styleable.ScannerOverlay_square_width,
+                getResources().getInteger(R.integer.smart_login_default_square_width));
+        rectHeight = a.getInteger(R.styleable.ScannerOverlay_square_height,
+                getResources().getInteger(R.integer.smart_login_default_square_height));
+
         eraser = new Paint();
         porterDuffXfermode = new PorterDuffXfermode((PorterDuff.Mode.CLEAR));
         borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -52,12 +55,17 @@ public class ScannerOverlay extends ViewGroup {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        final int rectWidthPx = dpToPx(rectWidth);
-        final int rectHeightPx = dpToPx(rectHeight);
+        final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        final int rectWidthPx = dpToPx(rectWidth, displayMetrics);
+        final int rectHeightPx = dpToPx(rectHeight, displayMetrics);
+        final float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        //If screen size is small, adjust position of Qr scanner square
+        final double heightPositionDivider = dpHeight <= getResources().getInteger(R.integer.small_screen_height) ? 4.5
+                : getResources().getInteger(R.integer.smart_login_height_divider);
         //Calculate scanner sides
-        left = (float)((w - rectWidthPx) / 2);
-        top = (float)((h - rectHeightPx ) / 3);
-        bottom = top + rectHeightPx ;
+        left = (float)((w - rectWidthPx) / getResources().getInteger(R.integer.smart_login_width_position_divider));
+        top = (float)((h - rectHeightPx ) / heightPositionDivider);
+        bottom = top + rectHeightPx;
         right = left + rectWidthPx;
         //Create rect
         rectF = new RectF(left, top, right, bottom);
@@ -72,8 +80,7 @@ public class ScannerOverlay extends ViewGroup {
     public void onLayout(boolean changed, int left, int top, int right, int bottom) {
     }
 
-    public int dpToPx(final int dp) {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+    public int dpToPx(final int dp, final DisplayMetrics displayMetrics) {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
@@ -99,9 +106,9 @@ public class ScannerOverlay extends ViewGroup {
         //border color
         borderPaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
         //border thickness
-        final int thickness = 20;
+        final int thickness = getResources().getInteger(R.integer.smart_login_border_thickness);
         //border distance
-        final int distance = 90;
+        final int distance = getResources().getInteger(R.integer.smart_login_border_distance);
 
         //Draw borders:
 

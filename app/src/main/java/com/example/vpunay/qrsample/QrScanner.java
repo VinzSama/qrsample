@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
-    private TextView barcodeValue;
+    private TextView barcodeScannerLabel;
     private ImageView imageView;
     private Button button;
     private ProgressBar pgsBar;
@@ -37,7 +37,7 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_scanner);
-        barcodeValue = findViewById(R.id.barcodeScannerLabel);
+        barcodeScannerLabel = findViewById(R.id.barcodeScannerLabel);
         button = findViewById(R.id.qrbutton);
         imageView = findViewById(R.id.imageView);
         pgsBar = findViewById(R.id.pBar);
@@ -74,14 +74,14 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
     public void setWhenLoadingIsDone(){
         pgsBar.setVisibility(View.INVISIBLE);
         imageView.setVisibility(View.VISIBLE);
-        imageView.setImageResource(R.drawable.check);
-        barcodeValue.setText(getString(R.string.smart_login_success_scan));
+        imageView.setImageResource(R.drawable.round_warning);
+        barcodeScannerLabel.setText(getString(R.string.smart_login_fail_scan));
         button.setText(getString(R.string.smart_login_OK));
     }
 
     public void setWhenStartLoading(final String qrCode){
         scannerOverlay.setVisibility(View.INVISIBLE);
-        barcodeValue.setText(getString(R.string.smart_login_loading_label));
+        barcodeScannerLabel.setText(getString(R.string.smart_login_loading_label));
         button.setVisibility(View.VISIBLE);
         pgsBar.setVisibility(View.VISIBLE);
         qrCodeOperations(qrCode);

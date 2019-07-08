@@ -1,6 +1,7 @@
 package com.example.vpunay.qrsample;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -8,15 +9,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,7 +33,7 @@ import java.io.IOException;
 
 import jp.wasabeef.blurry.Blurry;
 
-public class Scanner extends Fragment{
+public class Scanner extends Fragment {
 
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
@@ -69,21 +73,32 @@ public class Scanner extends Fragment{
                 .setAutoFocusEnabled(true)
                 .build();
 
+        startCamera();
+        barCodeDetection();
+        return view;
+    }
+
+    //function to ask permission and start camera
+    private void startCamera() {
         try {
             //Permission
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-                }else{
+                } else {
                     ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, 1);
                 }
+            }else{
+                mPreview.start(cameraSource, graphicOverlay);
+                safeToTakePicture = true;
             }
-            mPreview.start(cameraSource, graphicOverlay);
-            safeToTakePicture = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    //function to start barcode detection
+    private void barCodeDetection() {
         barcodeDetector.setProcessor(new Detector.Processor() {
             @Override
             public void release() {
@@ -104,12 +119,12 @@ public class Scanner extends Fragment{
                             rect.right = graphicOverlay.translateX(rect.right);
                             rect.bottom = graphicOverlay.translateY(rect.bottom);
                             //check if qr code is inside scanner border
-                            if (ScannerOverlay.isQrCodeInsideOverlay(rect)){
+                            if (ScannerOverlay.isQrCodeInsideOverlay(rect)) {
                                 //start operations
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if(safeToTakePicture){
+                                        if (safeToTakePicture) {
                                             startOperationsAfterQrIsScanned(barcodes.valueAt(0).displayValue);
                                         }
                                     }
@@ -122,7 +137,6 @@ public class Scanner extends Fragment{
             }
         });
 
-        return view;
     }
 
     /**
@@ -147,11 +161,12 @@ public class Scanner extends Fragment{
                 //returned bitmap (it returns a landscape)
                 bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 final Matrix rotateMatrix = new Matrix();
-                //Bug in kitkat. Must rotate to 360
+                //get value for rotation based on device
+                //KIitkat and Oreo needs 360 rotation
                 final int rotateValue = android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
+                        && android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O
                         ? getResources().getInteger(R.integer.smart_login_rotate_bitmap)
-                        : getResources().getInteger(R.integer.smart_login_rotate_bitmap_kitkat);
-
+                        : getResources().getInteger(R.integer.smart_login_rotate_bitmap_otherdevices);
                 //rotate image
                 rotateMatrix.postRotate(rotateValue);
                 //rotated image. bitmap returned by takePicture function returns landscape
@@ -189,9 +204,8 @@ public class Scanner extends Fragment{
         mPreview.release();
         barcodeDetector.release();
         try {
-            //FIX ME
             cameraSource.release();
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
 
         }
     }
@@ -225,4 +239,18 @@ public class Scanner extends Fragment{
         bitmap = null;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 1: {
+                if(grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED){
+                    clearBitmaps();
+                    release();
+                    requireActivity().onBackPressed();
+                }else{
+                    startCamera();
+                }
+            }
+        }
+    }
 }

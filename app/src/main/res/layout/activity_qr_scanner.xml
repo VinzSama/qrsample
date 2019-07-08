@@ -60,13 +60,14 @@
         android:id="@+id/imageView"
         android:layout_width="@dimen/center_image_size_width_height"
         android:layout_height="@dimen/center_image_size_width_height"
-        android:src="@drawable/warning"
+        android:src="@drawable/round_warning"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/scannerOverlay"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.448" />
+        app:layout_constraintVertical_bias="0.448"
+        />
 
     <ProgressBar
         android:id="@+id/pBar"
@@ -98,7 +99,6 @@
         android:text="@string/smart_login_label"
         android:textColor="@android:color/white"
         android:textSize="@dimen/smart_login_text_size"
-        app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/qrbutton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -111,7 +111,7 @@
         android:layout_width="@dimen/smart_login_button_width"
         android:layout_height="@dimen/smart_login_button_height"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="25dp"
         android:background="@drawable/rounded_button"
         android:text="@string/smart_login_button_cancel"
         android:textColor="@color/colorPrimary"
