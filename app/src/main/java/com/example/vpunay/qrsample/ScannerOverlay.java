@@ -22,7 +22,6 @@ public class ScannerOverlay extends ViewGroup {
     private PorterDuffXfermode porterDuffXfermode;
     private RectF rectF;
 
-
     public ScannerOverlay(final Context context) {
         super(context);
     }

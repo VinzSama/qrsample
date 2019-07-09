@@ -3,7 +3,7 @@
     <dimen name="smart_login_text_size">20sp</dimen>
     <dimen name="center_image_size_width_height">90dp</dimen>
     <dimen name="progress_bar_size_with_height">150dp</dimen>
-    <dimen name="smart_login_indicator_label_height">30dp</dimen>
+    <dimen name="smart_login_indicator_label_height">60dp</dimen>
     <dimen name="smart_login_indicator_label_margin_bot">10dp</dimen>
     <dimen name="smart_login_button_margin_bot">70dp</dimen>
     <dimen name="smart_login_button_height">55dp</dimen>

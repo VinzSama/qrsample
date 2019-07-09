@@ -2,10 +2,17 @@
     <string name="app_name">QRsample</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="smart_login_label_below_square">Place your 2D barcode of SmartLogin in this square.</string>
     <string name="smart_login_label">SmartLogin</string>
     <string name="smart_login_button_cancel">Cancel</string>
-    <string name="smart_login_fail_scan">Unable to log in</string>
-    <string name="smart_login_loading_label">Please wait for SmartLogin</string>
-    <string name="smart_login_success_scan">Successfully logged in</string>
+    <string name="smart_login_fail_scan">Login attempt timed out.</string>
+    <string name="smart_login_loading_label">SmartLogin authentication ongoing...</string>
+    <string name="smart_login_success_scan">Login completed.</string>
+    <string name="smart_login_back">back</string>
     <string name="smart_login_OK">OK</string>
+
+    <string name="smart_login_success_scan_jp">口グインが完了しました</string>
+    <string name="smart_login_fail_scan_jp">口グイン処理がタイムアウトしまた</string>
+    <string name="smart_login_loading_label_jp">SmartLogin認証中です</string>
+    <string name="smart_login_label_below_square_jp">SmartLoginのQRコードをこの枠に合わせてください</string>
 </resources>

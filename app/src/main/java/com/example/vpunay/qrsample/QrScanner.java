@@ -44,14 +44,6 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
         scannerOverlay = findViewById(R.id.scannerOverlay);
         setUpActionBar();
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-            }else{
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-            }
-        }
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,8 +66,8 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
     public void setWhenLoadingIsDone(){
         pgsBar.setVisibility(View.INVISIBLE);
         imageView.setVisibility(View.VISIBLE);
-        imageView.setImageResource(R.drawable.round_warning);
-        barcodeScannerLabel.setText(getString(R.string.smart_login_fail_scan));
+        imageView.setImageResource(R.drawable.check);
+        barcodeScannerLabel.setText(getString(R.string.smart_login_success_scan));
         button.setText(getString(R.string.smart_login_OK));
     }
 
@@ -83,6 +75,8 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
         scannerOverlay.setVisibility(View.INVISIBLE);
         barcodeScannerLabel.setText(getString(R.string.smart_login_loading_label));
         button.setVisibility(View.VISIBLE);
+        //when back
+       //button.setText(getString(R.string.smart_login_back));
         pgsBar.setVisibility(View.VISIBLE);
         qrCodeOperations(qrCode);
     }

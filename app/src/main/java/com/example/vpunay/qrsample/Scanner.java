@@ -163,8 +163,8 @@ public class Scanner extends Fragment {
                 final Matrix rotateMatrix = new Matrix();
                 //get value for rotation based on device
                 //KIitkat and Oreo needs 360 rotation
-                final int rotateValue = android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
-                        && android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+                final int rotateValue = (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
+                        && android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                         ? getResources().getInteger(R.integer.smart_login_rotate_bitmap)
                         : getResources().getInteger(R.integer.smart_login_rotate_bitmap_otherdevices);
                 //rotate image
@@ -205,9 +205,7 @@ public class Scanner extends Fragment {
         barcodeDetector.release();
         try {
             cameraSource.release();
-        } catch (NullPointerException ignored) {
-
-        }
+        } catch (NullPointerException ignored) { }
     }
 
     private void setUpBlur(final ViewGroup viewGroup) {
