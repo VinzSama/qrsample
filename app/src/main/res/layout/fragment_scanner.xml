@@ -22,7 +22,7 @@
 
     </com.example.vpunay.qrsample.CameraSourcePreview>
 
-    <android.support.constraint.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/innerlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -17,7 +17,7 @@ public class ScannerOverlay extends ViewGroup {
     private static float top;
     private static float right;
     private static float bottom;
-    private int rectWidth, rectHeight;
+    private static int rectWidth, rectHeight;
     private Paint eraser, borderPaint;
     private PorterDuffXfermode porterDuffXfermode;
     private RectF rectF;

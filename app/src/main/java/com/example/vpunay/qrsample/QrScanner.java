@@ -1,8 +1,6 @@
 package com.example.vpunay.qrsample;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +18,13 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
     private Button button;
     private ProgressBar pgsBar;
     private ScannerOverlay scannerOverlay;
+    private Status status = Status.LOADING;
     private String qrCode;
+
+    enum Status {
+        SUCCESS, FAIL, LOADING
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -47,9 +51,35 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                if(status == Status.SUCCESS){
+                    onBackPressed();
+                }else if(status == Status.LOADING){
+                    pgsBar.setVisibility(View.INVISIBLE);
+                    callFragment();
+                }else{
+                    callFragment();
+                }
             }
         });
+    }
+
+    private void callFragment(){
+        //call current fragment
+        final Fragment scannerFragment = this.getSupportFragmentManager().findFragmentById(R.id.barcode_fragment);
+        final Scanner scanner = (Scanner) scannerFragment;
+        if(scanner != null){
+            scanner.goBackScanner();
+            scanner.stopHandler();
+            changeUiWhenBackToScanner();
+        }
+        status = Status.LOADING;
+    }
+
+    private void changeUiWhenBackToScanner(){
+        button.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
+        barcodeScannerLabel.setText(getString(R.string.smart_login_label_below_square));
+        scannerOverlay.setVisibility(View.VISIBLE);
     }
 
     private void setUpActionBar() {
@@ -66,19 +96,30 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
     public void setWhenLoadingIsDone(){
         pgsBar.setVisibility(View.INVISIBLE);
         imageView.setVisibility(View.VISIBLE);
-        imageView.setImageResource(R.drawable.check);
-        barcodeScannerLabel.setText(getString(R.string.smart_login_success_scan));
-        button.setText(getString(R.string.smart_login_OK));
+        status = (validateQrCode(qrCode)) ? Status.SUCCESS : Status.FAIL;
+        final int drawable = status == Status.SUCCESS ? R.drawable.check : R.drawable.round_warning;
+        final String labelText = status == Status.SUCCESS ? getString(R.string.smart_login_success_scan)
+                : getString(R.string.smart_login_fail_scan);
+        final String buttonText = status == Status.SUCCESS ? getString(R.string.smart_login_OK)
+                : getString(R.string.smart_login_back);
+        imageView.setImageResource(drawable);
+        barcodeScannerLabel.setText(labelText);
+        button.setText(buttonText);
     }
 
     public void setWhenStartLoading(final String qrCode){
+        this.qrCode = qrCode;
         scannerOverlay.setVisibility(View.INVISIBLE);
         barcodeScannerLabel.setText(getString(R.string.smart_login_loading_label));
         button.setVisibility(View.VISIBLE);
-        //when back
-       //button.setText(getString(R.string.smart_login_back));
+        button.setText(getString(R.string.smart_login_button_cancel));
         pgsBar.setVisibility(View.VISIBLE);
-        qrCodeOperations(qrCode);
+    }
+
+    //sample validation
+    //if length of the data in the qr is 5 and above, it should be a success. (for prototype purposes)
+    private boolean validateQrCode(final String qrCode){
+        return qrCode.length() >= 5;
     }
 
     @Override
@@ -86,13 +127,9 @@ public class QrScanner extends AppCompatActivity implements Scanner.OnQrScan{
         setWhenStartLoading(qrCode);
     }
 
-    public void qrCodeOperations(final String qrCode){
-        //Temporary
-        this.qrCode = qrCode;
-    }
-
     @Override
     public void loadIsDone() {
         setWhenLoadingIsDone();
     }
+
 }

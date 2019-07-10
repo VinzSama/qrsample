@@ -1,7 +1,6 @@
 package com.example.vpunay.qrsample;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,20 +8,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -38,12 +35,14 @@ public class Scanner extends Fragment {
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
     private CameraSourcePreview mPreview;
-    private ConstraintLayout constraintLayout;
+    private RelativeLayout constraintLayout;
     private GraphicOverlay graphicOverlay;
     private Bitmap bitmap;
     private Bitmap rotatedBitmap;
     private Context context;
     private boolean safeToTakePicture;
+    //the handler for sample loading for prototyping purposes
+    private Handler handler;
 
     public Scanner() {
         // Required empty public constructor
@@ -55,6 +54,17 @@ public class Scanner extends Fragment {
         this.context = context;
     }
 
+    public void goBackScanner() {
+        onDestroy();
+        constraintLayout.setBackground(null);
+        Blurry.delete(constraintLayout);
+        constraintLayout.setVisibility(View.INVISIBLE);
+        setUpResources();
+        startCamera();
+        barCodeDetection();
+        mPreview.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -62,7 +72,13 @@ public class Scanner extends Fragment {
         mPreview = view.findViewById(R.id.preview);
         constraintLayout = view.findViewById(R.id.innerlayout);
         graphicOverlay = view.findViewById(R.id.overlay);
+        setUpResources();
+        startCamera();
+        barCodeDetection();
+        return view;
+    }
 
+    private void setUpResources(){
         barcodeDetector = new BarcodeDetector.Builder(context)
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
@@ -72,10 +88,6 @@ public class Scanner extends Fragment {
                         getResources().getInteger(R.integer.smart_login_preview_width))
                 .setAutoFocusEnabled(true)
                 .build();
-
-        startCamera();
-        barCodeDetection();
-        return view;
     }
 
     //function to ask permission and start camera
@@ -136,7 +148,6 @@ public class Scanner extends Fragment {
                 }
             }
         });
-
     }
 
     /**
@@ -162,7 +173,7 @@ public class Scanner extends Fragment {
                 bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 final Matrix rotateMatrix = new Matrix();
                 //get value for rotation based on device
-                //KIitkat and Oreo needs 360 rotation
+                //Kitkat and Oreo needs 360 rotation
                 final int rotateValue = (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
                         && android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                         ? getResources().getInteger(R.integer.smart_login_rotate_bitmap)
@@ -175,15 +186,17 @@ public class Scanner extends Fragment {
                         rotateMatrix, false);
                 //make the CamerSourcePreview invisible to avoid conflict from blurred background
                 mPreview.setVisibility(View.INVISIBLE);
+                constraintLayout.setVisibility(View.VISIBLE);
                 //make cameraSourcePreview stop
                 mPreview.stop();
+                final BitmapDrawable bitmapDrawable = new BitmapDrawable(rotatedBitmap);
                 //set the scanned image as background
-                constraintLayout.setBackgroundDrawable(new BitmapDrawable(rotatedBitmap));
+                constraintLayout.setBackground(bitmapDrawable);
                 //blur the background
                 setUpBlur(constraintLayout);
                 release();
                 //sample loading
-                final Handler handler = new Handler();
+                handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -198,6 +211,12 @@ public class Scanner extends Fragment {
             }
         });
         safeToTakePicture = false;
+
+    }
+
+    //to stop sample loading operations when cancel is clicked for prototyping purposes
+    public void stopHandler(){
+        handler.removeCallbacksAndMessages(null);
     }
 
     private void release() {
@@ -211,7 +230,7 @@ public class Scanner extends Fragment {
     private void setUpBlur(final ViewGroup viewGroup) {
         if (viewGroup != null) {
             //Make the layout blur
-            Blurry.with(context).onto(viewGroup);
+            Blurry.with(getActivity()).onto(viewGroup);
             //Make the layout transparent
             viewGroup.setAlpha(0.5f);
         }
