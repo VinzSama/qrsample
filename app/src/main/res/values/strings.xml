@@ -10,7 +10,8 @@
     <string name="smart_login_success_scan">Login completed.</string>
     <string name="smart_login_back">back</string>
     <string name="smart_login_OK">OK</string>
-
+    
+    <string name="smart_login_button_cancel_jp">キャンセル</string>
     <string name="smart_login_success_scan_jp">口グインが完了しました</string>
     <string name="smart_login_fail_scan_jp">口グイン処理がタイムアウトしまた</string>
     <string name="smart_login_loading_label_jp">SmartLogin認証中です</string>
