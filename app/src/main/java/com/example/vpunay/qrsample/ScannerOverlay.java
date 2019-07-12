@@ -71,8 +71,8 @@ public class ScannerOverlay extends ViewGroup {
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
-    public static boolean isQrCodeInsideOverlay(final RectF rect){
-       return rect.left >= left && rect.right <= right && rect.top >= top && rect.bottom <= bottom;
+    public static boolean isQrCodeInsideOverlay(final RectF rect, final GraphicOverlay graphicOverlay){
+       return rect.centerX() >= left && rect.centerX() <= right && rect.centerY() >= top && rect.centerY() <= bottom;
     }
 
     @Override

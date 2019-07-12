@@ -130,8 +130,9 @@ public class Scanner extends Fragment {
                             rect.top = graphicOverlay.translateY(rect.top);
                             rect.right = graphicOverlay.translateX(rect.right);
                             rect.bottom = graphicOverlay.translateY(rect.bottom);
+
                             //check if qr code is inside scanner border
-                            if (ScannerOverlay.isQrCodeInsideOverlay(rect)) {
+                            if (ScannerOverlay.isQrCodeInsideOverlay(rect, graphicOverlay)) {
                                 //start operations
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
