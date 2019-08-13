@@ -8,14 +8,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import android.util.SparseArray;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +25,6 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-
 import java.io.IOException;
 
 import jp.wasabeef.blurry.Blurry;
@@ -78,7 +77,7 @@ public class Scanner extends Fragment {
         return view;
     }
 
-    private void setUpResources(){
+    private void setUpResources() {
         barcodeDetector = new BarcodeDetector.Builder(context)
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
@@ -100,7 +99,7 @@ public class Scanner extends Fragment {
                 } else {
                     ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, 1);
                 }
-            }else{
+            } else {
                 mPreview.start(cameraSource, graphicOverlay);
                 safeToTakePicture = true;
             }
@@ -170,28 +169,21 @@ public class Scanner extends Fragment {
                 if (activity != null) {
                     activity.startLoading(barcode);
                 }
+                //get the right orientation to rotate image to portrait
+                final int orientation = Exif.getOrientation(bytes);
                 //returned bitmap (it returns a landscape)
                 bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                final Matrix rotateMatrix = new Matrix();
-                //get value for rotation based on device
-                //Kitkat and Oreo needs 360 rotation
-                final int rotateValue = (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
-                        && android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                        ? getResources().getInteger(R.integer.smart_login_rotate_bitmap)
-                        : getResources().getInteger(R.integer.smart_login_rotate_bitmap_otherdevices);
-                //rotate image
-                rotateMatrix.postRotate(rotateValue);
-                //rotated image. bitmap returned by takePicture function returns landscape
-                rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                        bitmap.getWidth(), bitmap.getHeight(),
-                        rotateMatrix, false);
+                //no need to rotate if orientation is 0
+                if (orientation != 0) {
+                    bitmap = rotateBitmap(bitmap, orientation);
+                }
                 //make the CamerSourcePreview invisible to avoid conflict from blurred background
                 mPreview.setVisibility(View.INVISIBLE);
+                //make the layout that holds the blurred image visible
                 constraintLayout.setVisibility(View.VISIBLE);
                 //make cameraSourcePreview stop
                 mPreview.stop();
-                final BitmapDrawable bitmapDrawable = new BitmapDrawable(rotatedBitmap);
-                //set the scanned image as background
+                final BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
                 constraintLayout.setBackground(bitmapDrawable);
                 //blur the background
                 setUpBlur(constraintLayout);
@@ -208,15 +200,24 @@ public class Scanner extends Fragment {
                     }
                     //sample 3 seconds loading time
                 }, 3000);
-                safeToTakePicture = true;
             }
         });
         safeToTakePicture = false;
 
     }
 
+    private Bitmap rotateBitmap(final Bitmap bitmap, final float angle) {
+        final int height = bitmap.getHeight();
+        final int width = bitmap.getWidth();
+        final Matrix rotateMatrix = new Matrix();
+        rotateMatrix.postRotate(angle);
+        return Bitmap.createBitmap(bitmap, 0, 0,
+                width, height,
+                rotateMatrix, false);
+    }
+
     //to stop sample loading operations when cancel is clicked for prototyping purposes
-    public void stopHandler(){
+    public void stopHandler() {
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -225,7 +226,8 @@ public class Scanner extends Fragment {
         barcodeDetector.release();
         try {
             cameraSource.release();
-        } catch (NullPointerException ignored) { }
+        } catch (NullPointerException ignored) {
+        }
     }
 
     private void setUpBlur(final ViewGroup viewGroup) {
@@ -259,16 +261,16 @@ public class Scanner extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case 1: {
-                if(grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED){
-                    clearBitmaps();
-                    release();
-                    requireActivity().onBackPressed();
-                }else{
-                    startCamera();
-                }
+        if (requestCode == 1) {
+            if (grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                clearBitmaps();
+                release();
+                requireActivity().onBackPressed();
+            } else {
+                startCamera();
             }
         }
     }
+
+
 }

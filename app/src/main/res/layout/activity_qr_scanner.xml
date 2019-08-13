@@ -1,137 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/smart_login_background"
-    android:id="@+id/parentLayout"
-    tools:context=".QrScanner"
-    >
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/custom_toolbar"
+<layout>
+    <data>
+        <import type="android.view.View"/>
+        <variable name="ui" type="com.example.vpunay.qrsample.UI"/>
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/parentLayout"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintTop_toTopOf="parent"
-       >
+        android:layout_height="match_parent"
+        android:background="@color/smart_login_background"
+        tools:context=".QrScanner">
 
-        <RelativeLayout
-            android:id="@+id/relative"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/custom_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/colorPrimaryDark"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:layout_marginRight="?android:attr/actionBarSize"
-                android:text="@string/smart_login_label"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/smart_login_text_size"
-                android:paddingRight="?attr/actionBarSize"
-                android:paddingEnd="?attr/actionBarSize"
-                android:layout_marginEnd="?android:attr/actionBarSize" />
-        </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+            <RelativeLayout
+                android:id="@+id/relative"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/barcode_fragment"
-        android:name="com.example.vpunay.qrsample.Scanner"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/custom_toolbar" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="?android:attr/actionBarSize"
+                    android:layout_marginRight="?android:attr/actionBarSize"
+                    android:paddingEnd="?attr/actionBarSize"
+                    android:paddingRight="?attr/actionBarSize"
+                    android:text="@string/smart_login_label"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/smart_login_text_size" />
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
 
-    <!-- Scanner overlay animation -->
-    <com.example.vpunay.qrsample.ScannerOverlay
-        android:id="@+id/scannerOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/smart_login_overlay_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/barcode_fragment"
-        app:square_height="250"
-        app:square_width="250" />
+        <fragment
+            android:id="@+id/barcode_fragment"
+            android:name="com.example.vpunay.qrsample.Scanner"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/custom_toolbar" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="@dimen/center_image_size_width_height"
-        android:layout_height="@dimen/center_image_size_width_height"
-        android:src="@drawable/round_warning"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/scannerOverlay"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.448"
-        />
+        <!-- Scanner overlay animation -->
+        <com.example.vpunay.qrsample.ScannerOverlay
+            android:id="@+id/scannerOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="@{ui.showOverlay ? View.VISIBLE : View.INVISIBLE}"
+            android:background="@color/smart_login_overlay_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/barcode_fragment"
+            app:square_height="250"
+            app:square_width="250" />
 
-    <ProgressBar
-        android:id="@+id/pBar"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="@dimen/progress_bar_size_with_height"
-        android:layout_height="@dimen/progress_bar_size_with_height"
-        android:layout_centerHorizontal="true"
-        android:indeterminate="true"
-        android:indeterminateDrawable="@drawable/loading"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/barcodeScannerLabel"
-        app:layout_constraintEnd_toEndOf="@+id/scannerOverlay"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scannerOverlay"
-        app:layout_constraintVertical_bias="0.736" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/center_image_size_width_height"
+            android:layout_height="@dimen/center_image_size_width_height"
+            app:logo="@{ui.logo}"
+            android:visibility="@{ui.showLogo ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/scannerOverlay"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.448" />
 
-    <TextView
-        android:id="@+id/barcodeScannerLabel"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/smart_login_indicator_label_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="5dp"
-        android:gravity="center_horizontal"
-        android:maxLines="3"
-        android:text="@string/smart_login_label_below_square"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/smart_login_text_size"
-        app:layout_constraintBottom_toTopOf="@+id/qrbutton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.45999998" />
+        <ProgressBar
+            android:id="@+id/pBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="@dimen/progress_bar_size_with_height"
+            android:layout_height="@dimen/progress_bar_size_with_height"
+            android:layout_centerHorizontal="true"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/loading"
+            android:visibility="@{ui.loadingScreenVisible ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toTopOf="@+id/barcodeScannerLabel"
+            app:layout_constraintEnd_toEndOf="@+id/scannerOverlay"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/scannerOverlay"
+            app:layout_constraintVertical_bias="0.736" />
 
-    <Button
-        android:id="@+id/qrbutton"
-        android:layout_width="@dimen/smart_login_button_width"
-        android:layout_height="@dimen/smart_login_button_height"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="25dp"
-        android:background="@drawable/rounded_button"
-        android:text="@string/smart_login_button_cancel"
-        android:textColor="@color/colorPrimary"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scannerOverlay"
-        app:layout_constraintVertical_bias="0.913" />
+        <TextView
+            android:id="@+id/barcodeScannerLabel"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/smart_login_indicator_label_height"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="50dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center_horizontal"
+            android:maxLines="3"
+            android:text="@{ui.label}"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/smart_login_text_size"
+            app:layout_constraintBottom_toTopOf="@+id/qrbutton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            app:layout_constraintVertical_bias="0.45999998" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="@dimen/smart_login_bottom_line_width"
-        android:layout_height="@dimen/smart_login_bottom_height"
-        android:layout_marginBottom="@dimen/smart_login_bottom_margin_bot"
-        android:background="@drawable/horizontal_line"
-        app:layout_constraintBottom_toBottomOf="@+id/scannerOverlay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/qrbutton"
+            android:layout_width="@dimen/smart_login_button_width"
+            android:layout_height="@dimen/smart_login_button_height"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/rounded_button"
+            android:text="@{ui.buttonLabel}"
+            android:textColor="@color/colorPrimary"
+            android:visibility="@{ui.buttonVisible ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/scannerOverlay"
+            app:layout_constraintVertical_bias="0.913" />
 
-</android.support.constraint.ConstraintLayout>
+        <View
+            android:id="@+id/view"
+            android:layout_width="@dimen/smart_login_bottom_line_width"
+            android:layout_height="@dimen/smart_login_bottom_height"
+            android:layout_marginBottom="@dimen/smart_login_bottom_margin_bot"
+            android:background="@drawable/horizontal_line"
+            app:layout_constraintBottom_toBottomOf="@+id/scannerOverlay"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

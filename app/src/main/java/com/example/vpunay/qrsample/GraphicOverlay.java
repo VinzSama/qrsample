@@ -59,32 +59,9 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
      * this and implement the {@link Graphic#draw(Canvas)} method to define the
      * graphics element.  Add instances to the overlay using {@link GraphicOverlay#add(Graphic)}.
      */
-    public static abstract class Graphic {
-        private GraphicOverlay mOverlay;
+    static abstract class Graphic {
+        abstract void draw(Canvas canvas);
 
-        public Graphic(GraphicOverlay overlay) {
-            mOverlay = overlay;
-        }
-
-        /**
-         * Draw the graphic on the supplied canvas.  Drawing should use the following methods to
-         * convert to view coordinates for the graphics that are drawn:
-         * <ol>
-         * <li>{@link Graphic#scaleX(float)} and {@link Graphic#scaleY(float)} adjust the size of
-         * the supplied value from the preview scale to the view scale.</li>
-         * <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the
-         * coordinate from the preview's coordinate system to the view coordinate system.</li>
-         * </ol>
-         *
-         * @param canvas drawing canvas
-         */
-        public abstract void draw(Canvas canvas);
-
-
-
-        public void postInvalidate() {
-            mOverlay.postInvalidate();
-        }
     }
 
     /**
@@ -137,50 +114,6 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     }
 
     /**
-     * Adds a graphic to the overlay.
-     */
-    public void add(T graphic) {
-        synchronized (mLock) {
-            mGraphics.add(graphic);
-        }
-        postInvalidate();
-    }
-
-    /**
-     * Removes a graphic from the overlay.
-     */
-    public void remove(T graphic) {
-        synchronized (mLock) {
-            mGraphics.remove(graphic);
-        }
-        postInvalidate();
-    }
-
-    /**
-     * Returns a copy (as a list) of the set of all active graphics.
-     * @return list of all active graphics.
-     */
-    public List<T> getGraphics() {
-        synchronized (mLock) {
-            return new Vector(mGraphics);
-        }
-    }
-
-    /**
-     * Returns the horizontal scale factor.
-     */
-    public float getWidthScaleFactor() {
-        return mWidthScaleFactor;
-    }
-
-    /**
-     * Returns the vertical scale factor.
-     */
-    public float getHeightScaleFactor() {
-        return mHeightScaleFactor;
-    }
-
-    /**
      * Sets the camera attributes for size and facing direction, which informs how to transform
      * image coordinates later.
      */
@@ -202,8 +135,8 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
 
         synchronized (mLock) {
             if ((mPreviewWidth != 0) && (mPreviewHeight != 0)) {
-                mWidthScaleFactor = (float) canvas.getWidth() / (float) mPreviewWidth;
-                mHeightScaleFactor = (float) canvas.getHeight() / (float) mPreviewHeight;
+                mWidthScaleFactor = (float) getWidth() / (float) mPreviewWidth;
+                mHeightScaleFactor = (float) getHeight() / (float) mPreviewHeight;
             }
 
             for (Graphic graphic : mGraphics) {
